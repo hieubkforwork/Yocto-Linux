@@ -1,0 +1,76 @@
+Build Host Packages
+------------------------------------------------------
+sudo apt-get install build-essential chrpath cpio debianutils diffstat file gawk gcc git iputils-ping libacl1 liblz4-tool locales python3 python3-git python3-jinja2 python3-pexpect python3-pip python3-subunit socat texinfo unzip wget xz-utils zstd
+
+Download Poky
+------------------------------------------------------
+git clone git://git.yoctoproject.org/poky
+git checkout -b {name}
+
+Make my layer
+-----------------------------------------------------
+** Change bblayers.conf **
+    BBLAYERS ?= " \
+        ...
+        ${TOPDIR}/../meta-my\
+        
+    "
+    **************************
+
+Build Image
+-----------------------------------------------------
+# Create environment
+. oe-init-build-env
+
+# Clone other layer to Poky
+git clone https://github.com/meta-qt5/meta-qt5.git -b scarthgap
+git clone https://github.com/openembedded/meta-openembedded.git -b scarthgap
+
+    ** Change bblayers.conf **
+    BBLAYERS ?= " \
+        ...
+        ${TOPDIR}/../meta-openembedded/meta-oe \
+        ${TOPDIR}/../meta-qt5\
+    "
+    **************************
+
+git clone https://github.com/agherzan/meta-raspberrypi.git -b scarthgap
+
+    ** Change local.conf **
+    # Hieu Modifications ################
+    MACHINE = "raspberrypi4-64"
+    #####################################
+    **************************
+
+     ** Change bblayers.conf **
+    BBLAYERS ?= " \
+        ...
+        ${TOPDIR}/../meta-raspberrypi\
+        
+    "
+    **************************
+
+# Add SSH server + UART
+    ** Change local.conf **
+    # Hieu Modifications ################
+    ...
+    IMAGE_FEATURES:append = "ssh-server-dropbear"
+    SERIAL_CONSOLES = "115200;ttyAMA0"
+    CMDLINE_SERIAL = "console=ttyAMA0,115200"
+    ENABLE_UART = "1"
+    RPI_KERNEL_DEVICETREE_OVERLAYS:append = "\
+    overlays/uart0.dtbo \
+    "
+    #####################################
+    **************************
+    
+    ** make new folder name recipes_bsp and it children inside for UART **
+    
+# Build Sato:
+Accept License, add to local.conf
+LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"
+
+Resolve config between connman and networkmanager, add to local.conf
+DISTRO_FEATURES:remove = "connman"
+VIRTUAL-RUNTIME_network_manager = "networkmanager"
+

@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "/home/andy/Documents/Yocto_Udemy/Yocto-Linux/poky"
-		}
+		},
+		{
+			"path": "/home/andy/Documents/Yocto_Udemy/Yocto-Linux/docs"
+		},
 	]
 }
